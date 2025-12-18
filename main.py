@@ -1,16 +1,31 @@
 import io
+import os
+import urllib.request
 from fastapi import FastAPI, Response
 from kokoro_onnx import Kokoro
 import soundfile as sf
 
 app = FastAPI()
 
-# Make sure these filenames match exactly what you downloaded
-kokoro = Kokoro("model_quantized.onnx", "voices.json")
+# URLs for the files
+MODEL_URL = "https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/model_quantized.onnx"
+VOICES_URL = "https://huggingface.co/NeuML/kokoro-base-onnx/resolve/main/voices.json"
+
+# Download files if they don't exist
+def download_files():
+    if not os.path.exists("model.onnx"):
+        print("Downloading model... this may take a minute.")
+        urllib.request.urlretrieve(MODEL_URL, "model.onnx")
+    if not os.path.exists("voices.json"):
+        print("Downloading voices...")
+        urllib.request.urlretrieve(VOICES_URL, "voices.json")
+
+download_files()
+kokoro = Kokoro("model.onnx", "voices.json")
 
 @app.get("/")
 def home():
-    return {"message": "TTS is running! Use /tts?text=hello to hear it."}
+    return {"status": "online", "message": "Visit /tts?text=hello to hear audio"}
 
 @app.get("/tts")
 async def generate_tts(text: str, voice: str = "af_heart"):
@@ -19,3 +34,4 @@ async def generate_tts(text: str, voice: str = "af_heart"):
     sf.write(buffer, samples, sample_rate, format="WAV")
     buffer.seek(0)
     return Response(content=buffer.read(), media_type="audio/wav")
+    
