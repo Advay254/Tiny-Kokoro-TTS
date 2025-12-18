@@ -7,9 +7,10 @@ import soundfile as sf
 
 app = FastAPI()
 
-# Updated URLs to use the stable binary voice file
+# STABLE PERMANENT LINKS
 MODEL_URL = "https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/onnx/model_quantized.onnx?download=true"
-VOICES_URL = "https://huggingface.co/thewh1teagle/kokoro-onnx/releases/download/v0.1.0/voices-v1.0.bin"
+# This is the official binary voice pack from the creator's GitHub releases
+VOICES_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
 
 MODEL_PATH = "model.onnx"
 VOICES_PATH = "voices.bin"
@@ -26,7 +27,8 @@ def get_kokoro():
             print("Downloading voices...")
             urllib.request.urlretrieve(VOICES_URL, VOICES_PATH)
         
-        print("Loading Kokoro...")
+        print("Loading Kokoro model into memory...")
+        # Initializing the library with the downloaded files
         _kokoro_instance = Kokoro(MODEL_PATH, VOICES_PATH)
     return _kokoro_instance
 
@@ -38,11 +40,16 @@ def health():
 async def generate_tts(text: str, voice: str = "af_heart"):
     try:
         model = get_kokoro()
+        # Generate the audio samples
         samples, sample_rate = model.create(text, voice=voice, speed=1.0)
+        
+        # Write to an in-memory buffer
         buffer = io.BytesIO()
         sf.write(buffer, samples, sample_rate, format="WAV")
         buffer.seek(0)
+        
         return Response(content=buffer.read(), media_type="audio/wav")
     except Exception as e:
+        print(f"Error occurred: {e}")
         return {"error": str(e)}
         
