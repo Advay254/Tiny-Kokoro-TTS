@@ -7,25 +7,25 @@ import soundfile as sf
 
 app = FastAPI()
 
-# URLs for the files
-MODEL_URL = "https://huggingface.co/onnx-community/Kokoro-82M-ONNX/resolve/main/model_quantized.onnx"
+# UPDATED DIRECT LINKS
+MODEL_URL = "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/onnx/model_quantized.onnx"
 VOICES_URL = "https://huggingface.co/NeuML/kokoro-base-onnx/resolve/main/voices.json"
 
-# Download files if they don't exist
 def download_files():
     if not os.path.exists("model.onnx"):
-        print("Downloading model... this may take a minute.")
+        print("Downloading model...")
         urllib.request.urlretrieve(MODEL_URL, "model.onnx")
     if not os.path.exists("voices.json"):
         print("Downloading voices...")
         urllib.request.urlretrieve(VOICES_URL, "voices.json")
 
+# This runs when the server starts
 download_files()
 kokoro = Kokoro("model.onnx", "voices.json")
 
-@app.get("/")
+@app.get("/")  # This is the Health Check path
 def home():
-    return {"status": "online", "message": "Visit /tts?text=hello to hear audio"}
+    return {"status": "healthy", "service": "Kokoro-TTS"}
 
 @app.get("/tts")
 async def generate_tts(text: str, voice: str = "af_heart"):
