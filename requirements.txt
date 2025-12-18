@@ -2,4 +2,4 @@ fastapi
 uvicorn
 kokoro-onnx
 soundfile
-onnxruntime
+onnxruntime-cpu
