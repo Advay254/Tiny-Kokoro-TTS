@@ -1,5 +1,6 @@
 fastapi
 uvicorn
-kokoro-onnx
+kokoro-onnx==0.4.9
 soundfile
-onnxruntime
+onnxruntime==1.20.1
+numpy<2.0.0
