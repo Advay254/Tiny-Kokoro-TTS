@@ -1,4 +1,4 @@
-from kokoro_tts import TTS
+from kokoro import TTS
 import base64
 import io
 import soundfile as sf
