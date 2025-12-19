@@ -1,3 +1,6 @@
-kokoro-onnx
-flask
-gunicorn
+fastapi
+uvicorn[standard]
+kokoro-tts
+numpy
+soundfile
+pydub
