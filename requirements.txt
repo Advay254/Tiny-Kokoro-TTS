@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
-kokoro-tts
 numpy
 soundfile
 pydub
+
+git+https://github.com/hexgrad/kokoro.git
